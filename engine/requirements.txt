@@ -1,0 +1,5 @@
+frida>=17.0.0
+frida-tools>=14.0.0
+UnityPy>=1.9.0
+Pillow>=10.0.0
+tqdm>=4.65.0
