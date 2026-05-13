@@ -13,7 +13,7 @@ from src.extractor import FridaExtractor, find_game_process, GAME_DATA_DIR, BUND
 from src.catalog_parser import CatalogParser
 from src.bundle_decryptor import BundleDecryptor
 
-DEFAULT_OUTPUT = r"D:\starsavior-extractor\output"
+DEFAULT_OUTPUT = os.getcwd() + "/output"
 RESCAN_SECONDS = 10
 
 

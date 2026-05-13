@@ -3,6 +3,8 @@ import sys
 import time
 import json
 import io
+import platform
+import os
 from pathlib import Path
 from typing import Optional, Callable
 
@@ -13,10 +15,15 @@ from .asset_extractor import AssetExtractor
 
 
 GAME_PROCESS_NAME = "StarSavior.exe"
-GAME_DATA_DIR = r"C:\Program Files (x86)\Steam\steamapps\common\StarSavior\Data"
+GAME_DATA_DIR = ""
+if platform.system() == "Windows":
+    GAME_DATA_DIR = r"C:\Program Files (x86)\Steam\steamapps\common\StarSavior\Data"
+# To cover everything but MacOS
+elif not platform.system() == "Darwin":
+    GAME_DATA_DIR = str(list(Path(os.path.expanduser("~")).rglob(GAME_PROCESS_NAME))[0].parent) + "/Data"
 BUNDLE_DIR = str(Path(GAME_DATA_DIR) / "eb")
 CATALOG_PATH = str(Path(GAME_DATA_DIR) / "StreamingAssets" / "aa" / "catalog.json")
-DEFAULT_OUTPUT_DIR = r"D:\starsavior-extractor\output"
+DEFAULT_OUTPUT_DIR = os.getcwd() + "/output"
 
 
 class FridaExtractor:
