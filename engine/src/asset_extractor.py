@@ -91,7 +91,7 @@ class AssetExtractor:
                 safe_name = self._safe_filename(name)
                 save_dir = self.output_dir / "textures" / source_name
                 save_dir.mkdir(parents=True, exist_ok=True)
-                save_path = save_dir / f"{safe_name}.png"
+                save_path = save_dir / self._with_ext(safe_name, ".png")
                 img.save(str(save_path))
                 return ExtractedAsset(
                     name=name,
@@ -115,7 +115,7 @@ class AssetExtractor:
                 safe_name = self._safe_filename(name)
                 save_dir = self.output_dir / "sprites" / source_name
                 save_dir.mkdir(parents=True, exist_ok=True)
-                save_path = save_dir / f"{safe_name}.png"
+                save_path = save_dir / self._with_ext(safe_name, ".png")
                 img.save(str(save_path))
                 return ExtractedAsset(
                     name=name,
@@ -141,15 +141,15 @@ class AssetExtractor:
         save_dir.mkdir(parents=True, exist_ok=True)
 
         if self._is_json(text):
-            save_path = save_dir / f"{safe_name}.json"
+            save_path = save_dir / self._with_ext(safe_name, ".json")
             with open(save_path, "w", encoding="utf-8") as f:
                 f.write(text)
         elif self._is_printable(text):
-            save_path = save_dir / f"{safe_name}.txt"
+            save_path = save_dir / self._with_ext(safe_name, ".txt")
             with open(save_path, "w", encoding="utf-8", errors="replace") as f:
                 f.write(text)
         else:
-            save_path = save_dir / f"{safe_name}.bytes"
+            save_path = save_dir / self._with_ext(safe_name, ".bytes")
             with open(save_path, "wb") as f:
                 if isinstance(text, str):
                     f.write(text.encode("utf-8", errors="replace"))
@@ -176,7 +176,7 @@ class AssetExtractor:
                 safe_name = self._safe_filename(name)
                 save_dir = self.output_dir / "audio" / source_name
                 save_dir.mkdir(parents=True, exist_ok=True)
-                save_path = save_dir / f"{safe_name}.wav"
+                save_path = save_dir / self._with_ext(safe_name, ".wav")
                 samples.export(str(save_path), format="WAV")
                 return ExtractedAsset(
                     name=name,
@@ -194,6 +194,14 @@ class AssetExtractor:
         for ch in r'<>:"/\|?*':
             name = name.replace(ch, "_")
         return name.strip(". ")
+
+    # Spine assets arrive already named "xxx.skel"/"xxx.atlas"; appending the
+    # detected type would stack extensions ("xxx.skel.bytes"), so keep existing ones
+    KNOWN_EXTS = (".png", ".json", ".txt", ".bytes", ".skel", ".atlas", ".bin", ".wav")
+
+    @classmethod
+    def _with_ext(cls, safe_name: str, ext: str) -> str:
+        return safe_name if safe_name.lower().endswith(cls.KNOWN_EXTS) else safe_name + ext
 
     @staticmethod
     def _is_json(text: str) -> bool:
